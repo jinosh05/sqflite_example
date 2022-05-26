@@ -63,7 +63,7 @@ class _MyAppState extends State<MyApp> {
                 ElevatedButton(
                     onPressed: () async {
                       int rowId = await databaseHelper.insert({
-                        DatabaseHelper.columnName: _name,
+                        DatabaseHelper.columnName: _name.text,
                       });
                       debugPrint(rowId.toString());
                       _name.clear();

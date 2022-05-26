@@ -22,6 +22,7 @@ class DatabaseHelper {
   get database async {
     if (_database == null) {
       _database = await initialiseDatabase();
+      return _database;
     } else {
       return _database;
     }
