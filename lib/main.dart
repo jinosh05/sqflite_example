@@ -21,11 +21,12 @@ class _MyAppState extends State<MyApp> {
   final TextEditingController _name = TextEditingController();
   final TextEditingController _updateName = TextEditingController();
   final TextEditingController _id = TextEditingController();
+  final TextEditingController _deleteId = TextEditingController();
 
   // For Validating Forms
   final _insertForm = GlobalKey<FormState>();
   final _updateForm = GlobalKey<FormState>();
-  // final insertForm = GlobalKey<FormState>();
+  final _deleteForm = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -65,6 +66,43 @@ class _MyAppState extends State<MyApp> {
               headingText('UPDATING :'),
               updationRow(context),
               sizedBox,
+              headingText('DELETING :'),
+              Form(
+                key: _deleteForm,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.6,
+                      child: TextFormField(
+                          controller: _deleteId,
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return "Enter ID";
+                            }
+                            return null;
+                          },
+                          style: const TextStyle(
+                            fontSize: 16,
+                          ),
+                          decoration: const InputDecoration.collapsed(
+                            hintText: 'Enter ID to Delete: ',
+                          )),
+                    ),
+                    ElevatedButton(
+                        onPressed: () => onDelete(),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.pink,
+                        ),
+                        child: const Text(
+                          'Delete',
+                          style: TextStyle(
+                            fontSize: 14,
+                          ),
+                        ))
+                  ],
+                ),
+              ),
               const Text(
                 'Datas :',
                 style: TextStyle(
@@ -78,6 +116,15 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  Future<void> onDelete() async {
+    if (_deleteForm.currentState!.validate()) {
+      int rowId = await databaseHelper.delete(int.parse(_deleteId.text));
+      debugPrint(rowId.toString());
+      _deleteId.clear();
+      getDataBase();
+    }
   }
 
   Text headingText(String text) {
