@@ -33,6 +33,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    const sizedBox = SizedBox(
+      height: 10,
+    );
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sqflite Example'),
@@ -46,6 +49,13 @@ class _MyAppState extends State<MyApp> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              'INSERTING :',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -80,9 +90,7 @@ class _MyAppState extends State<MyApp> {
                     ))
               ],
             ),
-            const SizedBox(
-              height: 10,
-            ),
+            sizedBox,
             const Text(
               'Datas :',
               style: TextStyle(
@@ -90,21 +98,48 @@ class _MyAppState extends State<MyApp> {
                 fontSize: 16,
               ),
             ),
-            //
-            allDatas.isNotEmpty
-                ? ListView.builder(
-                    itemCount: allDatas.length,
-                    shrinkWrap: true,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Text(
-                        'Id ${allDatas[index][DatabaseHelper.columnName]}',
-                      );
-                    },
-                  )
-                : const Text('No Datas Found')
+            dataList()
           ],
         ),
       ),
     );
+  }
+
+  StatelessWidget dataList() {
+    return allDatas.isNotEmpty
+        ? ListView.separated(
+            itemCount: allDatas.length,
+            padding: const EdgeInsets.symmetric(vertical: 5),
+            shrinkWrap: true,
+            itemBuilder: (BuildContext context, int index) {
+              return Text.rich(
+                TextSpan(text: 'Name: ', children: [
+                  TextSpan(
+                    text: allDatas[index][DatabaseHelper.columnName],
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.purple,
+                    ),
+                  ),
+                  const TextSpan(
+                    text: '\t ID : \t',
+                  ),
+                  TextSpan(
+                    text: allDatas[index][DatabaseHelper.columnId].toString(),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      color: Colors.green,
+                    ),
+                  ),
+                ]),
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return const SizedBox(
+                height: 5,
+              );
+            },
+          )
+        : const Text('No Datas Found');
   }
 }
