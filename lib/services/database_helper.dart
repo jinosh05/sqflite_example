@@ -60,7 +60,7 @@ $columnName TEXT NOT NULL )
 
   Future<int> update(Map<String, dynamic> row) async {
     Database db = await instance.database;
-    int id = row[columnId];
+    int id = int.parse(row[columnId]);
     return await db
         .update(_tableName, row, where: '$columnId = ?', whereArgs: [id]);
   }

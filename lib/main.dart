@@ -19,15 +19,23 @@ class _MyAppState extends State<MyApp> {
   DatabaseHelper databaseHelper = DatabaseHelper.instance;
   List<Map<String, dynamic>> allDatas = [];
   final TextEditingController _name = TextEditingController();
+  final TextEditingController _updateName = TextEditingController();
+  final TextEditingController _id = TextEditingController();
+
+  // For Validating Forms
+  final _insertForm = GlobalKey<FormState>();
+  final _updateForm = GlobalKey<FormState>();
+  // final insertForm = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
-    getDataBase;
+    getDataBase();
   }
 
-  getDataBase() async {
+  Future<void> getDataBase() async {
     allDatas = await databaseHelper.queryAll();
+    debugPrint(allDatas.length.toString());
     setState(() {});
   }
 
@@ -41,7 +49,7 @@ class _MyAppState extends State<MyApp> {
         title: const Text('Sqflite Example'),
         actions: [
           IconButton(
-              onPressed: () => getDataBase, icon: const Icon(Icons.refresh))
+              onPressed: () => getDataBase(), icon: const Icon(Icons.refresh))
         ],
       ),
       body: Padding(
@@ -56,39 +64,79 @@ class _MyAppState extends State<MyApp> {
                 fontSize: 18,
               ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  child: TextFormField(
-                      controller: _name,
-                      style: const TextStyle(
-                        fontSize: 16,
+            insertionRow(context),
+            sizedBox,
+            const Text(
+              'UPDATING :',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            Form(
+              key: _updateForm,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.4,
+                    child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Enter Name";
+                          }
+                          return null;
+                        },
+                        controller: _updateName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                        decoration: const InputDecoration.collapsed(
+                          hintText: 'Enter Updated Name: ',
+                        )),
+                  ),
+                  SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.3,
+                    child: TextFormField(
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "Enter ID";
+                          }
+                          return null;
+                        },
+                        controller: _id,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                        decoration: const InputDecoration.collapsed(
+                          hintText: 'ID : ',
+                        )),
+                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        if (_updateForm.currentState!.validate()) {
+                          debugPrint("Validated");
+                          int rowId = await databaseHelper.update({
+                            DatabaseHelper.columnName: _updateName.text,
+                            DatabaseHelper.columnId: _id.text,
+                          });
+                          debugPrint(rowId.toString());
+                          _updateName.clear();
+                          _id.clear();
+                          getDataBase();
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.pink,
                       ),
-                      decoration: const InputDecoration.collapsed(
-                        hintText: 'Enter Name: ',
-                      )),
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      int rowId = await databaseHelper.insert({
-                        DatabaseHelper.columnName: _name.text,
-                      });
-                      debugPrint(rowId.toString());
-                      _name.clear();
-                      getDataBase();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      primary: Colors.pink,
-                    ),
-                    child: const Text(
-                      'Insert',
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                    ))
-              ],
+                      child: const Text(
+                        'Update',
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                      ))
+                ],
+              ),
             ),
             sizedBox,
             const Text(
@@ -103,6 +151,56 @@ class _MyAppState extends State<MyApp> {
         ),
       ),
     );
+  }
+
+  insertionRow(BuildContext context) {
+    return Form(
+      key: _insertForm,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: TextFormField(
+                controller: _name,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Enter Name";
+                  }
+                  return null;
+                },
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+                decoration: const InputDecoration.collapsed(
+                  hintText: 'Enter New Name: ',
+                )),
+          ),
+          ElevatedButton(
+              onPressed: () => onInsert(),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.pink,
+              ),
+              child: const Text(
+                'Insert',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ))
+        ],
+      ),
+    );
+  }
+
+  Future<void> onInsert() async {
+    if (_insertForm.currentState!.validate()) {
+      int rowId = await databaseHelper.insert({
+        DatabaseHelper.columnName: _name.text,
+      });
+      debugPrint(rowId.toString());
+      _name.clear();
+      getDataBase();
+    }
   }
 
   StatelessWidget dataList() {
