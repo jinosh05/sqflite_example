@@ -67,53 +67,58 @@ class _MyAppState extends State<MyApp> {
               updationRow(context),
               sizedBox,
               headingText('DELETING :'),
-              Form(
-                key: _deleteForm,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.6,
-                      child: TextFormField(
-                          controller: _deleteId,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Enter ID";
-                            }
-                            return null;
-                          },
-                          style: const TextStyle(
-                            fontSize: 16,
-                          ),
-                          decoration: const InputDecoration.collapsed(
-                            hintText: 'Enter ID to Delete: ',
-                          )),
-                    ),
-                    ElevatedButton(
-                        onPressed: () => onDelete(),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.pink,
-                        ),
-                        child: const Text(
-                          'Delete',
-                          style: TextStyle(
-                            fontSize: 14,
-                          ),
-                        ))
-                  ],
-                ),
-              ),
+              deletionRow(context),
               const Text(
-                'Datas :',
+                'Database :',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
               ),
+              sizedBox,
               dataList()
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Form deletionRow(BuildContext context) {
+    return Form(
+      key: _deleteForm,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          SizedBox(
+            width: MediaQuery.of(context).size.width * 0.6,
+            child: TextFormField(
+                controller: _deleteId,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Enter ID";
+                  }
+                  return null;
+                },
+                style: const TextStyle(
+                  fontSize: 16,
+                ),
+                decoration: const InputDecoration.collapsed(
+                  hintText: 'Enter ID to Delete: ',
+                )),
+          ),
+          ElevatedButton(
+              onPressed: () => onDelete(),
+              style: ElevatedButton.styleFrom(
+                primary: Colors.pink,
+              ),
+              child: const Text(
+                'Delete',
+                style: TextStyle(
+                  fontSize: 14,
+                ),
+              ))
+        ],
       ),
     );
   }
@@ -265,26 +270,34 @@ class _MyAppState extends State<MyApp> {
             padding: const EdgeInsets.symmetric(vertical: 5),
             shrinkWrap: true,
             itemBuilder: (BuildContext context, int index) {
-              return Text.rich(
-                TextSpan(text: 'Name: ', children: [
-                  TextSpan(
-                    text: allDatas[index][DatabaseHelper.columnName],
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.purple,
-                    ),
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text.rich(
+                    TextSpan(text: 'Name : ', children: [
+                      TextSpan(
+                        text: allDatas[index][DatabaseHelper.columnName],
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.purple,
+                        ),
+                      ),
+                    ]),
                   ),
-                  const TextSpan(
-                    text: '\t ID : \t',
+                  Text.rich(
+                    TextSpan(text: '\t ID : \t', children: [
+                      TextSpan(
+                        text:
+                            allDatas[index][DatabaseHelper.columnId].toString(),
+                        style: const TextStyle(
+                          fontSize: 15,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ]),
                   ),
-                  TextSpan(
-                    text: allDatas[index][DatabaseHelper.columnId].toString(),
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: Colors.green,
-                    ),
-                  ),
-                ]),
+                  const SizedBox()
+                ],
               );
             },
             separatorBuilder: (BuildContext context, int index) {
@@ -293,6 +306,12 @@ class _MyAppState extends State<MyApp> {
               );
             },
           )
-        : const Text('No Datas Found');
+        : const Text(
+            'No Datas Found',
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.deepOrange,
+            ),
+          );
   }
 }
