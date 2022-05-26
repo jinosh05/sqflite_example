@@ -16,8 +16,13 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  // Instance of DatabaseHelper
   DatabaseHelper databaseHelper = DatabaseHelper.instance;
+
+  // Variable to Store Datas from Database
   List<Map<String, dynamic>> allDatas = [];
+
+  // Text Controllers
   final TextEditingController _name = TextEditingController();
   final TextEditingController _updateName = TextEditingController();
   final TextEditingController _id = TextEditingController();

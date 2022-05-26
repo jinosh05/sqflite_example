@@ -15,6 +15,7 @@ class DatabaseHelper {
 
   DatabaseHelper._privateConstructor();
 
+  /// Instance of DatabaseHelper
   static final instance = DatabaseHelper._privateConstructor();
 
   static Database? _database;
